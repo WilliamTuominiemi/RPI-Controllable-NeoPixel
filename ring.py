@@ -1,9 +1,21 @@
+from RPi import GPIO
+from time import sleep
 
 import time
 import board
 import neopixel
 
 pixel_pin = board.D18
+
+clk = 17
+dt = 27
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+counter = 0
+clkLastState = GPIO.input(clk)
 
 num_pixels = 24
 
@@ -12,6 +24,9 @@ ORDER = neopixel.GRB
 pixels = neopixel.NeoPixel(
     pixel_pin, num_pixels, brightness=1, auto_write=False, pixel_order=ORDER
 )
+
+brightness = 0.5
+step = 0.05
 
 
 def wheel(pos):
@@ -43,26 +58,31 @@ def rainbow_cycle(wait):
         time.sleep(wait)
 
 
-while True:
-    # Comment this line out if you have RGBW/GRBW NeoPixels
-    # pixels.fill((255, 0, 0))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((255, 0, 0, 0))
-    # pixels.show()
-    # time.sleep(1)
+# while True:
+#     pixels.fill((0, 0, 127))
+#     pixels.show()
+#     # rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
 
-    # Comment this line out if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 255, 0))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 255, 0, 0))
-    # pixels.show()
-    # time.sleep(1)
+try:
 
-    # Comment this line out if you have RGBW/GRBW NeoPixels
-    pixels.fill((0, 0, 255))
-    # Uncomment this line if you have RGBW/GRBW NeoPixels
-    # pixels.fill((0, 0, 255, 0))
-    pixels.show()
-    # time.sleep(1)
+    while True:
+        clkState = GPIO.input(clk)
+        dtState = GPIO.input(dt)
+        if clkState != clkLastState:
+            if dtState != clkState:
+                if brightness < 1 - step:
+                    brightness = brightness + step
+                    print("+")
+            else:
+                if brightness > 0 + step:
+                    brightness = brightness - step
+                    print("-")
 
-    # rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
+            colour = 255 * brightness
+            print(colour)
+            pixels.fill((0, 0, colour))
+            pixels.show()
+        clkLastState = clkState
+        sleep(0.01)
+finally:
+    GPIO.cleanup()

@@ -5,17 +5,11 @@ import time
 import board
 import neopixel
 
-pixel_pin = board.D18
-
-clk = 17
-dt = 27
-
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-counter = 0
-clkLastState = GPIO.input(clk)
+# Configure neopixel
+
+pixel_pin = board.D18
 
 num_pixels = 24
 
@@ -27,6 +21,18 @@ pixels = neopixel.NeoPixel(
 
 brightness = 0.5
 step = 0.05
+
+# Configure rotary
+
+counter = 0
+
+clk = 17
+dt = 27
+
+GPIO.setup(clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+clkLastState = GPIO.input(clk)
 
 
 def wheel(pos):
@@ -58,13 +64,7 @@ def rainbow_cycle(wait):
         time.sleep(wait)
 
 
-# while True:
-#     pixels.fill((0, 0, 127))
-#     pixels.show()
-#     # rainbow_cycle(0.001)  # rainbow cycle with 1ms delay per step
-
 try:
-
     while True:
         clkState = GPIO.input(clk)
         dtState = GPIO.input(dt)

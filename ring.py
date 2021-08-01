@@ -61,6 +61,9 @@ GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+rainbow = False
+
+# Rainbow functions
 
 def wheel(pos):
     if pos < 0 or pos > 255:
@@ -79,7 +82,7 @@ def wheel(pos):
         r = 0
         g = int(pos * 3)
         b = int(255 - pos * 3)
-    return (r * brightness, g * brightness, b * brightness) if ORDER in (neopixel.RGB, neopixel.GRB) else (r, g, b, 0)
+    return (r, g, b) if ORDER in (neopixel.RGB, neopixel.GRB) else (r, g, b, 0)
 
 
 def rainbow_cycle(wait):
@@ -90,29 +93,6 @@ def rainbow_cycle(wait):
         pixels.show()
         time.sleep(wait)
 
-
-def readLine(line, characters):
-    global R, G, B
-
-    GPIO.output(line, GPIO.HIGH)
-    if(GPIO.input(C1) == 1):
-        print(characters[0])
-        R = 255
-        G = 0
-        B = 0
-    if(GPIO.input(C2) == 1):
-        print(characters[1])
-    if(GPIO.input(C3) == 1):
-        print(characters[2])
-    if(GPIO.input(C4) == 1):
-        print(characters[3])
-    GPIO.output(line, GPIO.LOW)
-
-    pixels.fill((R * brightness, G * brightness, B * brightness))
-    pixels.show()
-
-
-rainbow = False
 
 try:
     while True:
@@ -140,8 +120,10 @@ try:
         if(GPIO.input(C4) == 1):  # RAINBOW
             rainbow = True
 
+        # Control brightness with rotary
         clkState = GPIO.input(clk)
         dtState = GPIO.input(dt)
+
         if clkState != clkLastState:
             if dtState != clkState:
                 if brightness < 1 - step:
@@ -154,6 +136,7 @@ try:
 
         clkLastState = clkState
 
+        # Update LEDs
         if rainbow == False:
             pixels.fill((R * brightness, G * brightness, B * brightness))
             pixels.show()

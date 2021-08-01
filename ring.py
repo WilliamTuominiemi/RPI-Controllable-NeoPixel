@@ -79,7 +79,7 @@ def wheel(pos):
         r = 0
         g = int(pos * 3)
         b = int(255 - pos * 3)
-    return (r, g, b) if ORDER in (neopixel.RGB, neopixel.GRB) else (r, g, b, 0)
+    return (r * brightness, g * brightness, b * brightness) if ORDER in (neopixel.RGB, neopixel.GRB) else (r, g, b, 0)
 
 
 def rainbow_cycle(wait):
@@ -112,25 +112,33 @@ def readLine(line, characters):
     pixels.show()
 
 
+rainbow = False
+
 try:
     while True:
         # Keypad
         GPIO.output(L1, GPIO.HIGH)
         GPIO.output(L2, GPIO.HIGH)
         GPIO.output(L3, GPIO.HIGH)
+        GPIO.output(L4, GPIO.HIGH)
 
         if(GPIO.input(C1) == 1):  # RED
             R = 255
             G = 0
             B = 0
+            rainbow = False
         if(GPIO.input(C2) == 1):  # GREEN
             R = 0
             G = 255
             B = 0
+            rainbow = False
         if(GPIO.input(C3) == 1):  # BLUE
             R = 0
             G = 0
             B = 255
+            rainbow = False
+        if(GPIO.input(C4) == 1):  # RAINBOW
+            rainbow = True
 
         clkState = GPIO.input(clk)
         dtState = GPIO.input(dt)
@@ -146,9 +154,12 @@ try:
 
         clkLastState = clkState
 
-        pixels.fill((R * brightness, G * brightness, B * brightness))
-        pixels.show()
+        if rainbow == False:
+            pixels.fill((R * brightness, G * brightness, B * brightness))
+            pixels.show()
+        else:
+            rainbow_cycle(0.001)
 
-        sleep(0.01)
+        sleep(0.001)
 finally:
     GPIO.cleanup()

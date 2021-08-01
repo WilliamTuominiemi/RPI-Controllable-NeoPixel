@@ -10,6 +10,10 @@ GPIO.setmode(GPIO.BCM)
 
 # Configure neopixel
 
+R = 0
+G = 0
+B = 255
+
 pixel_pin = board.D18
 
 num_pixels = 24
@@ -88,9 +92,14 @@ def rainbow_cycle(wait):
 
 
 def readLine(line, characters):
+    global R, G, B
+
     GPIO.output(line, GPIO.HIGH)
     if(GPIO.input(C1) == 1):
         print(characters[0])
+        R = 255
+        G = 0
+        B = 0
     if(GPIO.input(C2) == 1):
         print(characters[1])
     if(GPIO.input(C3) == 1):
@@ -99,14 +108,29 @@ def readLine(line, characters):
         print(characters[3])
     GPIO.output(line, GPIO.LOW)
 
+    pixels.fill((R * brightness, G * brightness, B * brightness))
+    pixels.show()
+
 
 try:
     while True:
         # Keypad
-        readLine(L1, ["1", "2", "3", "A"])
-        readLine(L2, ["4", "5", "6", "B"])
-        readLine(L3, ["7", "8", "9", "C"])
-        readLine(L4, ["*", "0", "#", "D"])
+        GPIO.output(L1, GPIO.HIGH)
+        GPIO.output(L2, GPIO.HIGH)
+        GPIO.output(L3, GPIO.HIGH)
+
+        if(GPIO.input(C1) == 1):  # RED
+            R = 255
+            G = 0
+            B = 0
+        if(GPIO.input(C2) == 1):  # GREEN
+            R = 0
+            G = 255
+            B = 0
+        if(GPIO.input(C3) == 1):  # BLUE
+            R = 0
+            G = 0
+            B = 255
 
         clkState = GPIO.input(clk)
         dtState = GPIO.input(dt)
@@ -120,11 +144,11 @@ try:
                     brightness = brightness - step
                     print("-")
 
-            colour = 255 * brightness
-            print(colour)
-            pixels.fill((0, 0, colour))
-            pixels.show()
         clkLastState = clkState
+
+        pixels.fill((R * brightness, G * brightness, B * brightness))
+        pixels.show()
+
         sleep(0.01)
 finally:
     GPIO.cleanup()

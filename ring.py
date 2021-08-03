@@ -18,7 +18,7 @@ pixel_pin = board.D18
 
 num_pixels = 24
 
-ORDER = neopixel.GRB
+ORDER = neopixel.RGB
 
 pixels = neopixel.NeoPixel(
     pixel_pin, num_pixels, brightness=1, auto_write=False, pixel_order=ORDER
@@ -64,6 +64,7 @@ GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 rainbow = False
 
 # Rainbow functions
+
 
 def wheel(pos):
     if pos < 0 or pos > 255:

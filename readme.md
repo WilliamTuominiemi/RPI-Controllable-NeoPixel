@@ -1,4 +1,4 @@
-# Raspberry Pi Security Camera
+# Raspberry Pi Controllable NeoPixel
 
 ## Parts
 - [Raspberry Pi 4](https://www.amazon.com/gp/product/B07TC2BK1X/ref=as_li_qf_asin_il_tl?ie=UTF8&tag=williamtuomin-20&creative=9325&linkCode=as2&creativeASIN=B07TC2BK1X&linkId=e86cecdf376581e544b6c88fbe3584b4)
